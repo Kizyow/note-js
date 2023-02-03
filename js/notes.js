@@ -73,7 +73,7 @@ let noteListMenuView = {
         div.setAttribute("class", "note_list_item");
         let para = document.createElement("p");
         para.setAttribute("id", `${app.listeNotes.liste.length-1}`);
-        let text = document.createTextNode(`${note.titre} ${note.date_creation.toLocaleString('fr-FR', {timeZone: 'UTC+1'})}`);
+        let text = document.createTextNode(`${note.titre} ${note.date_creation.toLocaleString('fr-FR', {timeZone: 'UTC'})}`);
         para.appendChild(text);
         div.appendChild(para);
         noteListMenu.appendChild(div);
