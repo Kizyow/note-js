@@ -45,7 +45,8 @@ let noteFormView = {
         let noteView = new NoteView(note);
         noteView.afficherNoteCourante();
         app.noteCourante = app.listeNotes.addNote(note);
-        noteListMenuView.displayItem(note);
+        noteListMenuView.displayItem(note, app.noteCourante);
+        app.listeNotes.save();
     }
 
 };
@@ -66,13 +67,25 @@ NoteList.prototype.getList = function (){
     return this.liste;
 }
 
+NoteList.prototype.save = function (){
+    let json = JSON.stringify(this.liste);
+    localStorage.setItem("liste", json);
+}
+
+NoteList.prototype.load = function (){
+    let json = localStorage.getItem("liste");
+    if(json !== null) {
+        this.liste = JSON.parse(json);
+    }
+}
+
 let noteListMenuView = {
-    displayItem(note){
+    displayItem(note, id){
         let noteListMenu = document.getElementById("noteListMenu");
         let div = document.createElement("div");
         div.setAttribute("class", "note_list_item");
         let para = document.createElement("p");
-        para.setAttribute("id", `${app.listeNotes.liste.length-1}`);
+        para.setAttribute("id", `${id}`);
         let text = document.createTextNode(`${note.titre} ${note.date_creation.toLocaleString('fr-FR', {timeZone: 'UTC'})}`);
         para.appendChild(text);
         div.appendChild(para);
@@ -98,6 +111,11 @@ let noteListMenuView = {
         Array.prototype.forEach.call(noteItems, noteItem => {
             noteItem.classList.remove("note_list_item-selected");
         });
+    },
+    displayItems(notes){
+        for(let i = 0; i<notes.length;i++){
+            this.displayItem(notes[i], i);
+        }
     }
 }
 
@@ -106,6 +124,8 @@ let mainMenuView = {
         noteFormView.display();
     },
     init(){
+        app.listeNotes.load();
+        noteListMenuView.displayItems(app.listeNotes.getList());
         let add = document.getElementById("add");
         add.addEventListener('click', this.addHandler)
         let validate = document.getElementById("form_add_note_valid");
